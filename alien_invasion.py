@@ -1,5 +1,6 @@
 
 import pygame
+from pygame.sprite import Group
 
 from settings import Settings
 from ship import Ship
@@ -14,15 +15,22 @@ def run_game():
     screen = pygame.display.set_mode((ai_settings.screen_width, ai_settings.screen_height))
     pygame.display.set_caption("Alien Invasion")
     # Make a Ship
-    ship = Ship(screen)
+    ship = Ship(ai_settings, screen)
+    # make a group to store a bullet
+    bullets = Group()
 
     # start the main loop of the run_game
     while True:
         # Watch for keyboard and mouse events.
-        gf.check_events(ship)
+        gf.check_events(ai_settings, screen, ship, bullets)
         ship.update()
-        gf.update_screen(ai_settings, screen, ship)
-
+        bullets.update()
+        # get rid of the bullet that disappear
+        for bullet in bullets.copy():
+            if bullet.rect.bottom <= 0:
+                bullets.remove(bullet)
+            print(len(bullets))
+        gf.update_screen(ai_settings, screen, ship, bullets)
 
         # Redraw the screen during each pass through loop
         screen.fill(ai_settings.bg_color)
